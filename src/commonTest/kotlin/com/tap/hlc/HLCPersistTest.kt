@@ -1,12 +1,14 @@
 package com.tap.hlc
 
 import com.benasher44.uuid.uuid4
-import okio.Path.Companion.toPath
-import okio.fakefilesystem.FakeFileSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.time.ExperimentalTime
+import okio.Path.Companion.toPath
+import okio.fakefilesystem.FakeFileSystem
 
+@OptIn(ExperimentalTime::class)
 class HLCPersistTest {
 
     @Test
@@ -23,7 +25,9 @@ class HLCPersistTest {
 
         HybridLogicalClock.store(clock, path, fileSystem, filename)
 
-        val expectedEncoded = "${epochMillis.toString().padStart(15, '0')}:${counter.toString(36).padStart(5, '0')}:${node.toString().replace("-", "").takeLast(16)}"
+        val expectedEncoded = "${epochMillis.toString().padStart(15, '0')}:${
+            counter.toString(36).padStart(5, '0')
+        }:${node.toString().replace("-", "").takeLast(16)}"
         val result = fileSystem.read(path / filename) {
             readUtf8()
         }
@@ -43,7 +47,9 @@ class HLCPersistTest {
         val counter = 15
         val node = uuid4().toString().replace("-", "").takeLast(16)
 
-        val encoded = "${epochMillis.toString().padStart(15, '0')}:${counter.toString(36).padStart(5, '0')}:$node"
+        val encoded = "${epochMillis.toString().padStart(15, '0')}:${
+            counter.toString(36).padStart(5, '0')
+        }:$node"
 
         fileSystem.write(path / filename) {
             writeUtf8(encoded)

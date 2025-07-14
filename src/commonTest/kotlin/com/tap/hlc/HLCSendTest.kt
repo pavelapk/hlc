@@ -2,11 +2,13 @@ package com.tap.hlc
 
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.get
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class HLCSendTest {
 
     private val localNode = NodeID.mint()

@@ -1,32 +1,26 @@
 [versions]
 
-kotlin = "1.8.21"
-kotlinter = "3.14.0"
+kotlin = "2.1.21"
+kotlinter = "5.1.1"
 
-kotlinx-coroutines = "1.7.0-RC"
-kotlinx-datetime = "0.4.0"
-kotlinx-serialization = "1.5.0"
+kotlinx-datetime = "0.7.1"
 
-okio="3.3.0"
-result = "1.1.17"
-uuid = "0.7.0"
+okio = "3.15.0"
+result = "2.0.1"
+uuid = "0.8.4"
 
 [plugins]
 
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter"  }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 
 [libraries]
 
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime"}
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
-okio-core = { module = "com.squareup.okio:okio", version.ref = "okio"}
-okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio"}
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+okio-core = { module = "com.squareup.okio:okio", version.ref = "okio" }
+okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "result" }
-uuid = { module = "com.benasher44:uuid", version.ref = "uuid"}
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 
 [bundles]
 

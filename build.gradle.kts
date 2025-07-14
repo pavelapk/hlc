@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinter)
@@ -9,11 +8,16 @@ group = "com.tap.hlc"
 version = "1.1.0"
 
 kotlin {
-    targets {
-        jvm()
-    }
+    jvm()
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    linuxX64()
+
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(libs.okio.core)
                 api(libs.kotlinx.datetime)
@@ -21,8 +25,8 @@ kotlin {
                 api(libs.uuid)
             }
         }
-        
-        val commonTest by getting {
+
+        commonTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.okio.fakefilesystem)

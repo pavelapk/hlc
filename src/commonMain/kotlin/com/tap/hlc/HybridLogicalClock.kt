@@ -5,12 +5,14 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.flatMap
 import com.github.michaelbull.result.getOr
-import kotlinx.datetime.Clock
 import okio.FileSystem
 import okio.Path
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import okio.SYSTEM
 
 /**
  * Implementation of a HLC [1][2]
@@ -21,6 +23,7 @@ import kotlin.math.pow
  * [2]: https://muratbuffalo.blogspot.com/2014/07/hybrid-logical-clocks.html
  * [3]: https://jaredforsyth.com/posts/hybrid-logical-clocks/
  */
+@OptIn(ExperimentalTime::class)
 data class HybridLogicalClock(
     val timestamp: Timestamp = Timestamp.now(Clock.System),
     val node: NodeID = NodeID.mint(),
@@ -40,7 +43,7 @@ data class HybridLogicalClock(
             maxClockDrift: Int = 1000 * 60,
         ): Result<HybridLogicalClock, HLCError> {
             return if (wallClockTime.epochMillis > local.timestamp.epochMillis) {
-                Ok(local.copy(timestamp = wallClockTime))
+                Ok(local.copy(timestamp = wallClockTime, counter = 0))
             } else {
                 Ok(local.copy(counter = local.counter + 1)).flatMap { clock ->
                     validate(clock, wallClockTime, maxClockDrift)
@@ -57,29 +60,39 @@ data class HybridLogicalClock(
             wallClockTime: Timestamp = Timestamp.now(Clock.System),
             maxClockDrift: Int = 1000 * 60,
         ): Result<HybridLogicalClock, HLCError> {
-            return when {
-                local.node.identifier == remote.node.identifier -> {
-                    Err(HLCError.DuplicateNodeError(local.node))
-                }
-                wallClockTime.epochMillis > local.timestamp.epochMillis &&
-                    wallClockTime.epochMillis > remote.timestamp.epochMillis -> {
-                    Ok(local.copy(timestamp = wallClockTime, counter = 0))
-                }
-                local.timestamp.epochMillis == remote.timestamp.epochMillis -> {
-                    Ok(local.copy(counter = max(local.counter, remote.counter) + 1))
-                }
-                local.timestamp.epochMillis > remote.timestamp.epochMillis -> {
-                    Ok(local.copy(counter = local.counter + 1))
-                }
-                else -> {
-                    Ok(local.copy(timestamp = remote.timestamp, counter = remote.counter + 1))
-                }
-            }.flatMap { clock ->
-                validate(clock, wallClockTime, maxClockDrift)
+            if (local.node.identifier == remote.node.identifier) {
+                return Err(HLCError.DuplicateNodeError(local.node))
             }
+
+            val maxTimestamp = maxOf(
+                local.timestamp.epochMillis,
+                remote.timestamp.epochMillis,
+                wallClockTime.epochMillis
+            )
+
+            val newCounter = when {
+                maxTimestamp == local.timestamp.epochMillis && maxTimestamp == remote.timestamp.epochMillis ->
+                    max(local.counter, remote.counter) + 1
+
+                maxTimestamp == local.timestamp.epochMillis ->
+                    local.counter + 1
+
+                maxTimestamp == remote.timestamp.epochMillis ->
+                    remote.counter + 1
+
+                else -> 0
+            }
+
+            val newClock = local.copy(timestamp = Timestamp(maxTimestamp), counter = newCounter)
+
+            return validate(newClock, wallClockTime, maxClockDrift)
         }
 
-        private fun validate(clock: HybridLogicalClock, now: Timestamp, maxClockDrift: Int): Result<HybridLogicalClock, HLCError> {
+        private fun validate(
+            clock: HybridLogicalClock,
+            now: Timestamp,
+            maxClockDrift: Int
+        ): Result<HybridLogicalClock, HLCError> {
             if (clock.counter > 36f.pow(5).toInt()) {
                 return Err(HLCError.CausalityOverflowError)
             }
@@ -93,7 +106,9 @@ data class HybridLogicalClock(
 
         fun encodeToString(hlc: HybridLogicalClock): String {
             return with(hlc) {
-                "${timestamp.epochMillis.toString().padStart(15, '0')}:${counter.toString(36).padStart(5, '0')}:${node.identifier}"
+                "${timestamp.epochMillis.toString().padStart(15, '0')}:${
+                    counter.toString(36).padStart(5, '0')
+                }:${node.identifier}"
             }
         }
 
@@ -106,8 +121,11 @@ data class HybridLogicalClock(
                 Timestamp(it.toLong())
             } ?: return Err(HLCDecodeError.TimestampDecodeFailure(encoded))
 
-            val counter = parts.getOrNull(1)?.toInt(36) ?: return Err(HLCDecodeError.CounterDecodeFailure(encoded))
-            val node = parts.getOrNull(2)?.let { NodeID(it) } ?: return Err(HLCDecodeError.NodeDecodeFailure(encoded))
+            val counter = parts.getOrNull(1)?.toInt(36) ?: return Err(
+                HLCDecodeError.CounterDecodeFailure(encoded)
+            )
+            val node = parts.getOrNull(2)?.let { NodeID(it) }
+                ?: return Err(HLCDecodeError.NodeDecodeFailure(encoded))
 
             return Ok(HybridLogicalClock(timestamp, node, counter))
         }
@@ -121,7 +139,12 @@ data class HybridLogicalClock(
          * val directory = "/Users/alice".toPath()
          * HybridLogicalClock.store(hlc, path)
          */
-        fun store(hlc: HybridLogicalClock, directory: Path, fileSystem: FileSystem = FileSystem.SYSTEM, fileName: String = CLOCK_FILE) {
+        fun store(
+            hlc: HybridLogicalClock,
+            directory: Path,
+            fileSystem: FileSystem = FileSystem.SYSTEM,
+            fileName: String = CLOCK_FILE
+        ) {
             fileSystem.createDirectories(directory)
             val filepath = directory / fileName
             fileSystem.write(filepath) {
@@ -138,7 +161,11 @@ data class HybridLogicalClock(
          * val directory = "/Users/alice".toPath()
          * val nullableClock = HybridLogicalClock.load(path)
          */
-        fun load(directory: Path, fileSystem: FileSystem = FileSystem.SYSTEM, fileName: String = CLOCK_FILE): HybridLogicalClock? {
+        fun load(
+            directory: Path,
+            fileSystem: FileSystem = FileSystem.SYSTEM,
+            fileName: String = CLOCK_FILE
+        ): HybridLogicalClock? {
             val filepath = directory / fileName
             if (!fileSystem.exists(filepath)) {
                 return null

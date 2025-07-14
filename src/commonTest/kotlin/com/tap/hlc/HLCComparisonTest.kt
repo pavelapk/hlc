@@ -1,10 +1,12 @@
 package com.tap.hlc
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class HLCComparisonTest {
 
     private val localNode = NodeID.mint()

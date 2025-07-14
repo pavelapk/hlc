@@ -3,14 +3,16 @@ package com.tap.hlc
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class HLCReceiveTest {
 
     private val localNode = NodeID.mint()
