@@ -1,14 +1,15 @@
 package com.tap.hlc
 
-import com.benasher44.uuid.uuid4
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 class HLCPersistTest {
 
     @Test
@@ -17,7 +18,7 @@ class HLCPersistTest {
 
         val epochMillis = 943920000000L
         val counter = 15
-        val node = uuid4()
+        val node = Uuid.random()
 
         val clock = HybridLogicalClock(Timestamp(epochMillis), NodeID.mint(node), counter)
         val path = "/Users/alice".toPath()
@@ -45,7 +46,7 @@ class HLCPersistTest {
 
         val epochMillis = 943920000000L
         val counter = 15
-        val node = uuid4().toString().replace("-", "").takeLast(16)
+        val node = Uuid.random().toString().replace("-", "").takeLast(16)
 
         val encoded = "${epochMillis.toString().padStart(15, '0')}:${
             counter.toString(36).padStart(5, '0')
@@ -73,7 +74,7 @@ class HLCPersistTest {
 
         val epochMillis = 943920000000L
         val counter = 15
-        val node = uuid4()
+        val node = Uuid.random()
 
         val clock = HybridLogicalClock(Timestamp(epochMillis), NodeID.mint(node), counter)
         HybridLogicalClock.store(clock, path, fileSystem, filename)

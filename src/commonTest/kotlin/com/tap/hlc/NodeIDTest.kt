@@ -3,7 +3,9 @@ package com.tap.hlc
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 class NodeIDTest {
 
     @Test

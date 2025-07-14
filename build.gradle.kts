@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.tap.hlc"
-version = "1.1.0"
+version = "1.2.0"
 
 kotlin {
     jvm()
@@ -22,7 +22,6 @@ kotlin {
                 api(libs.okio.core)
                 api(libs.kotlinx.datetime)
                 api(libs.result)
-                api(libs.uuid)
             }
         }
 

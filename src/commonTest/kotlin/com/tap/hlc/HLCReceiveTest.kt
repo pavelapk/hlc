@@ -11,8 +11,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 class HLCReceiveTest {
 
     private val localNode = NodeID.mint()

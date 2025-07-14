@@ -7,8 +7,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 class HLCSendTest {
 
     private val localNode = NodeID.mint()

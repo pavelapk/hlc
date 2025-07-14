@@ -12,6 +12,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 import okio.SYSTEM
 
 /**
@@ -23,7 +24,7 @@ import okio.SYSTEM
  * [2]: https://muratbuffalo.blogspot.com/2014/07/hybrid-logical-clocks.html
  * [3]: https://jaredforsyth.com/posts/hybrid-logical-clocks/
  */
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 data class HybridLogicalClock(
     val timestamp: Timestamp = Timestamp.now(Clock.System),
     val node: NodeID = NodeID.mint(),
