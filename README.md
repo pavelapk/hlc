@@ -2,11 +2,9 @@
 
 ![badge][badge-android]
 ![badge][badge-jvm]
-![badge][badge-js]
 ![badge][badge-ios]
-![badge][badge-linux]
-![badge][badge-windows]
-![badge][badge-mac]
+
+## Fork from https://github.com/CharlieTap/hlc with updated Kotlin and iOS support
 
 A Kotlin multiplatform implementation of a [hybrid logical clock](https://cse.buffalo.edu/tech-reports/2014-04.pdf)
 
