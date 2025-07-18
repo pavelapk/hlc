@@ -1,10 +1,10 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinter)
-    id("maven-publish")
+    alias(libs.plugins.maven.publish)
 }
 
-group = "com.tap.hlc"
+group = "com.tap"
 version = "1.2.0"
 
 kotlin {
@@ -32,4 +32,24 @@ kotlin {
             }
         }
     }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "githubPackages"
+            url = uri("https://maven.pkg.github.com/pavelapk/hlc")
+            credentials(PasswordCredentials::class)
+        }
+    }
+}
+
+
+mavenPublishing {
+
+    coordinates(
+        groupId = group.toString(),
+        artifactId = "hlc",
+        version = version.toString(),
+    )
 }

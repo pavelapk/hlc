@@ -2,6 +2,7 @@
 
 kotlin = "2.1.21"
 kotlinter = "5.1.1"
+maven-publish = "0.34.0"
 
 kotlinx-datetime = "0.7.1"
 
@@ -12,6 +13,7 @@ result = "2.0.1"
 
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 
 [libraries]
 
@@ -21,4 +23,3 @@ okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", versio
 result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "result" }
 
 [bundles]
-
